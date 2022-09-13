@@ -1,0 +1,105 @@
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大濕之音2</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+    <script>
+        window.onload = function(){
+            var app = new Vue({
+                el: '#app',
+                vuetify: new Vuetify(),
+                data: {
+                    text: "",
+                    audioUrl: "",
+                    converting: false,
+
+                    about: false
+                },
+                methods: {
+                    convert(){
+                        var formData = new FormData();
+                        formData.append('text', this.text);
+                        this.converting = true;
+                        fetch('./api/TTS/create_wav', {
+                            method: 'POST',
+                            body: formData
+                        }).then(result => result.json()).then(result => {
+                            this.audioUrl = result.message;
+                            this.$nextTick(function () {
+                                audio.play();
+                            });
+                            this.converting = false;
+                        }).catch(error => {
+                            this.converting = false;
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <v-app>
+            <v-app-bar color="#666666" dark app>
+                <v-toolbar-title>大濕之音2</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn icon @click="about = true" v-bind="attrs" v-on="on">
+                            <v-icon>mdi-information-outline</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>關於</span>
+                </v-tooltip>
+            </v-app-bar>
+            <v-main>
+                <v-textarea
+                    outlined
+                    label="文字"
+                    v-model="text"
+                ></v-textarea>
+                <v-btn block @click="convert" :disabled="converting">
+                    <span v-if="!converting">轉語音</span>
+                    <span v-else>
+                        <v-progress-circular indeterminate color="primary" style="margin: 8px;"></v-progress-circular>
+						<span>轉語音中...</span>
+                    </span>
+                </v-btn>
+                <div style="margin-top: 10px;">
+                    <audio id="audio" :src="audioUrl" controls></audio>
+                </div>
+            </v-main>
+            
+            <v-dialog v-model="about" max-width="500px">
+                <v-card>
+                    <v-card-title>
+                        <w-icon></w-icon>
+                        關於
+                    </v-card-title>
+                    <v-card-text>
+                        大濕之音2 v1.0.220913
+                        <br/>
+                        作者：jack850628
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" text  @click="about = false">
+                            關閉
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-app>
+    </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+Docker:
+	打包image檔:
+		docker build . -t pikapi-and-dasi-gashapon-machine-
+
+	執行容器:
+		docker run -p 5000:5000 -p 80:80 -p 443:443 -v pdgm-mysql-data:/var/lib/mysql -it <IMAGE Id> [<COMMAND>]
+		-t 選項讓Docker分配一個虛擬終端（pseudo-tty）並綁定到容器的標準輸入上， -i 則讓容器的標準輸入保持打開，-d 可以讓容器於背景啟動
+	重起容器：
+		docker start <CONTAINER ID>
+	向容器發送要運行的命令
+		docker exec -ti <CONTAINER ID OR NAME> <COMMAND>
+	連入容器：
+		docker attach <CONTAINER ID OR NAME>
+		連入後，可以按下 ctrl + P 然後 ctrl + Q 跳離容器，讓它繼續在背景執行。
+	查看容器ip：
+		docker inspect <CONTAINER ID OR NAME> | grep '"IPAddress"' | head -n 1
+
+參數<COMMAND>可以用例如：/bin/bash
+	volume備份：
+		docker run --rm -v pdgm-mysql-data:/data -v ~/pikapi-and-dasi-gashapon-machine/sql-backup:/data2 -it python:3.7 tar -zcvf data2/pdgm-mysql_data.tar.gz data
+		--rm 在容器結束後將容器自動刪除 python:3.7 因為pikapi-and-dasi-gashapon-machine是基於python:3.7映像去建立的，所以已經下載了python映像這樣就不用另外下載其他映像，不然這裡也可以會成ubuntu映像
+	volume還原：
+		docker run --rm -v pdgm-mysql-data:/data -v ~/pikapi-and-dasi-gashapon-machine/sql-backup:/data2 -it python:3.7 tar -zxvf /data2/pdgm-mysql_data.tar.gz -C /
+		tar的-C用來指定解壓縮的出來的檔案要放在哪個目錄，這裡會指定/(根目錄)是因為在備份時是在/(根目錄)進行的，因此壓進去的檔案路徑會是data/開頭的，因為備份和還原時都將volume掛接在容器的/data，因此解壓縮在/(跟目錄)自然就會回到volume(/data)
+
+
+也可以使用docker compose配合docker-compose.yml同時操作一個或多個Docker容器
+	build並且run docker:
+		docker-compose up -d
+		-d 可以讓容器於背景啟動
+	build或重新build image檔:
+		docker-compose build
+	啟動容器:
+		docker-compose start
+	停止容器:
+		docker-compose stop
+	連入容器:
+		docker-compose exec <SERVICE> <COMMAND>
+		例如: docker-compose exec pikapi_and_dasi_gashapon_machine_server bash
+	更多資料: https://ithelp.ithome.com.tw/articles/10206437

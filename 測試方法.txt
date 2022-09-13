@@ -1,0 +1,17 @@
+建立python虛擬環境
+python3 -m venv venv
+接者進入虛擬環境
+. venv/bin/activate
+將自己寫的flaskr安裝起來
+pip3 install -e .
+
+運行app(flaskr)
+export FLASK_APP=flaskr
+flask run
+
+運行測試
+pip3 install pytest
+pip3 install pytest-ordering
+pytest
+或
+py.test tests/auth_test.py -vv

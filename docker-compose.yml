@@ -1,0 +1,14 @@
+version: "2"
+services:
+  wet-elephant-sound2:
+    #image: "pikapi_and_dasi_gashapon_machine:latest" #這個會嘗試去docker hub取得image檔，取得失敗則會報錯，不會去抓local image檔
+    build: . #直接使用Dockerfile build專案來建立要使用的image檔，不可與image共存
+    container_name: service
+    ports:
+      - "8082:80"
+      - "4436:443"
+    volumes:
+      - "/home/jack/Documents/wet-elephant-sound2/flaskr/TTS/speaker:/app/flaskr/TTS/speaker"
+      - "/home/jack/Documents/wet-elephant-sound2/flaskr/TTS/checkpoint:/app/flaskr/TTS/checkpoint"
+      - "/home/jack/Documents/wet-elephant-sound2/logs/:/app/logs"
+    restart: always

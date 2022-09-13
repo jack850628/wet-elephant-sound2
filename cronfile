@@ -1,0 +1,4 @@
+#----這行不可刪----- 文件開頭與結尾必須要保留空行(也可以是註解)，否則出現錯誤： new crontab file is missing newline before EOF, can't install.
+0 0 * * * find /app/flaskr/static/wav -type f -mtime +1 -exec rm -f {} \;
+0 0 * * * python3 /app/host_tasks/LogsCleaner.py -p "/app/logs" -k 5
+#----這行不可刪-----
