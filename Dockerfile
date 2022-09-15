@@ -28,6 +28,7 @@ RUN crontab /app/cronfile
 
 CMD ["cron", "start"]
 CMD ["/bin/bash", "-c", "source /app/run.sh"]
+#CMD /usr/sbin/cron -f
 # CMD ["python3", "/app/run.py"]
 
 #CMD /bin/bash
