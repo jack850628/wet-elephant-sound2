@@ -13,7 +13,9 @@ def init_app(app):
 @TTS.route('/create_wav', methods=['POST'])
 def createWav():
     try:
-        text = request.values['text'] if 'text' in request.values else '預設文字'
+        text = request.values['text'].strip() if 'text' in request.values else '預設文字。'
+        if text[-1] != '。':
+            text += '。'
         return ResponseTemplate.success(tts.createWav(text))
     except (
         Exception
