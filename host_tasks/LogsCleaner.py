@@ -15,13 +15,15 @@ import sys
 import JTools as JTools
 
 SLICE_LOGS = [
-    '/uwsgi.log',
+    'uwsgi.log',
+    'celery.log',
     '/nginx/access.log',
     '/nginx/error.log'
 ]
 
 CLENR_LOGS = [
     'uwsgi.log*',
+    'celery.log*',
     'LogsCleaner.py*',
     'nginx/access.log*',
     'nginx/error.log*',

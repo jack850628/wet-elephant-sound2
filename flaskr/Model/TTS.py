@@ -1,15 +1,30 @@
-import uuid, os
-import soundfile as sf
+import uuid, time
+import redis
 from flaskr.Model.JException import *
 from flaskr.Values import Locales as Locales
 from flaskr.Model.JException import *
-from flaskr.TTS.test_all import production
-from flaskr.TTS.util import hparams
+from tasks import TTS as tts
 
-output_dir = './flaskr/static/wav/'
+pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(connection_pool=pool)
 
-def createWav(text):
+def createWav(userID, text):
     name = '{}.wav'.format(uuid.uuid1())
-    sf.write(os.path.join(output_dir, name), production(text), hparams.sample_rate)
-    return 'static/wav/{}'.format(name)
+    tts.doTTS.delay(userID, name, text)
+    # return 'static/wav/{}'.format(name)
+
+def waitAudioName(userID: str):
+    r.hset(userID + '佔位', '佔位', '佔位資料')
+    try:
+        while True:
+            audioName = r.lpop(userID)
+            if audioName != None:
+                yield "event: audioName\ndata: %s\n\n" % audioName
+            else:
+                yield "event: heartbeat\ndata: ok\n\n"
+            time.sleep(1)
+    finally:
+        r.delete(userID)
+        r.delete(userID + '佔位')
+
     

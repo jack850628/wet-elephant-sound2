@@ -13,8 +13,16 @@
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
     <script>
+        function uuidv4() {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        const UUID = uuidv4()
+        
         window.onload = function(){
-            var app = new Vue({
+            new Vue({
                 el: '#app',
                 vuetify: new Vuetify(),
                 data: {
@@ -28,20 +36,35 @@
                     convert(){
                         var formData = new FormData();
                         formData.append('text', this.text);
+                        formData.append('userID', UUID);
                         this.converting = true;
                         fetch('./api/TTS/create_wav', {
                             method: 'POST',
                             body: formData
                         }).then(result => result.json()).then(result => {
-                            this.audioUrl = result.message;
-                            this.$nextTick(function () {
-                                audio.play();
-                            });
-                            this.converting = false;
+                            console.debug(result)
+                            // this.audioUrl = result.message;
+                            // this.$nextTick(function () {
+                            //     audio.play();
+                            // });
+                            // this.converting = false;
                         }).catch(error => {
                             this.converting = false;
                         });
                     }
+                },
+                mounted(){
+                    const eventSource = new EventSource('./api/TTS/wait_audio_name?userID=' + UUID);
+                    eventSource.addEventListener('audioName', event => {
+                        this.audioUrl = 'static/wav/' + event.data;
+                        this.$nextTick(function () {
+                            audio.play();
+                        });
+                        this.converting = false;
+                    });
+                    eventSource.onerror = (err) => {
+                        console.error(err);
+                    };
                 }
             });
         }

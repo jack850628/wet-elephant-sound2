@@ -7,4 +7,6 @@ touch /app/logs/nginx/access.log
 touch /app/logs/nginx/error.log
 cron
 service nginx start
+service redis-server start
+celery -A tasks worker --loglevel=info --pool=threads --logfile /app/logs/celery.log &
 uwsgi --ini /app/uwsgi.ini

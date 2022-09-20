@@ -5,6 +5,8 @@ gevent==1.4.0
 uwsgi
 python-dateutil
 pycrypto
+redis
+celery
 
 wheel
 tensorflow==2.9.1

@@ -6,7 +6,7 @@ WORKDIR /app
 
 
 RUN apt-get update
-RUN apt-get install -y nginx vim libgl1-mesa-glx cron ffmpeg
+RUN apt-get install -y nginx vim redis libgl1-mesa-glx cron ffmpeg
 RUN apt-get clean && \
     apt-get autoremove
 	
