@@ -34,6 +34,19 @@
                 },
                 methods: {
                     convert(){
+                        const eventSource = new EventSource('./api/TTS/wait_audio_name?userID=' + UUID);
+                        eventSource.addEventListener('audioName', event => {
+                            this.audioUrl = 'static/wav/' + event.data;
+                            this.$nextTick(function () {
+                                audio.play();
+                            });
+                            this.converting = false;
+                            eventSource.close();
+                        });
+                        eventSource.onerror = (err) => {
+                            console.error(err);
+                        };
+                        
                         var formData = new FormData();
                         formData.append('text', this.text);
                         formData.append('userID', UUID);
@@ -50,21 +63,9 @@
                             // this.converting = false;
                         }).catch(error => {
                             this.converting = false;
+                            eventSource.close();
                         });
                     }
-                },
-                mounted(){
-                    const eventSource = new EventSource('./api/TTS/wait_audio_name?userID=' + UUID);
-                    eventSource.addEventListener('audioName', event => {
-                        this.audioUrl = 'static/wav/' + event.data;
-                        this.$nextTick(function () {
-                            audio.play();
-                        });
-                        this.converting = false;
-                    });
-                    eventSource.onerror = (err) => {
-                        console.error(err);
-                    };
                 }
             });
         }
