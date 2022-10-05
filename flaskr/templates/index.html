@@ -20,15 +20,18 @@
         }
 
         const UUID = uuidv4()
+        const MAX_TEXT_LENGTH = 25;
         
         window.onload = function(){
             new Vue({
                 el: '#app',
                 vuetify: new Vuetify(),
                 data: {
-                    text: "",
+                    MAX_TEXT_LENGTH,
+                    text: "大家好。",
                     audioUrl: "",
                     converting: false,
+                    textLengthRules: [v => v.length <= MAX_TEXT_LENGTH || '最多只允許25個字'],
 
                     about: false
                 },
@@ -46,8 +49,8 @@
                         eventSource.onerror = (err) => {
                             console.error(err);
                         };
-                        
-                        var formData = new FormData();
+
+                        const formData = new FormData();
                         formData.append('text', this.text);
                         formData.append('userID', UUID);
                         this.converting = true;
@@ -89,10 +92,12 @@
             <v-main>
                 <v-textarea
                     outlined
+                    counter
                     label="文字"
                     v-model="text"
+                    :rules="textLengthRules"
                 ></v-textarea>
-                <v-btn block @click="convert" :disabled="converting">
+                <v-btn block @click="convert" :disabled="converting || text.length > MAX_TEXT_LENGTH">
                     <span v-if="!converting">轉語音</span>
                     <span v-else>
                         <v-progress-circular indeterminate color="primary" style="margin: 8px;"></v-progress-circular>
