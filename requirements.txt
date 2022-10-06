@@ -6,7 +6,7 @@ uwsgi
 python-dateutil
 pycrypto
 redis
-celery
+celery==4.4.7
 
 wheel
 tensorflow==2.9.1
