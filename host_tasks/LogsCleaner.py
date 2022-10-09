@@ -15,8 +15,8 @@ import sys
 import JTools as JTools
 
 SLICE_LOGS = [
-    'uwsgi.log',
-    'celery.log',
+    '/uwsgi.log',
+    '/celery.log',
     '/nginx/access.log',
     '/nginx/error.log'
 ]
