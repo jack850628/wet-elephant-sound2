@@ -8,5 +8,7 @@ touch /app/logs/nginx/error.log
 cron
 service nginx start
 service redis-server start
-celery -A tasks worker --loglevel=info --pool=threads --logfile /app/logs/celery.log &
+#celery -A tasks worker --loglevel=info --pool=threads --logfile /app/logs/celery.log &
+#celery worker -A tasks --loglevel=info --logfile /app/logs/celery.log &
+bash -c "while :; do celery -A tasks worker --loglevel=debug --pool=threads --logfile /app/logs/celery.log; done" &
 uwsgi --ini /app/uwsgi.ini
